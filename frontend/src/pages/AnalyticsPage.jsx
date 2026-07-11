@@ -1,125 +1,625 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  LineChart,
+  Line,
+  ResponsiveContainer,
+  CartesianGrid,
+  AreaChart,
+  Area,
+} from "recharts";
+
+import {
+  CheckCircle2,
+  Clock3,
+  AlertTriangle,
+  Layers3,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+
 import { workspacesApi } from "../api/tasks";
-import { BarChart, Bar, XAxis, YAxis, Tooltip,
-         LineChart, Line, ResponsiveContainer, CartesianGrid } from "recharts";
 
 const STATUS_COLORS = {
-  backlog:"#94a3b8", todo:"#60a5fa", in_progress:"#f59e0b",
-  in_review:"#a78bfa", done:"#34d399", cancelled:"#f87171",
+  backlog: "#94a3b8",
+  todo: "#60a5fa",
+  in_progress: "#f59e0b",
+  in_review: "#a78bfa",
+  done: "#34d399",
+  cancelled: "#f87171",
 };
 
 export default function AnalyticsPage() {
   const { wsId } = useParams();
+
   const [data, setData] = useState(null);
 
+  const [loading, setLoading] =
+    useState(true);
+
   useEffect(() => {
-    workspacesApi.analytics(wsId).then(r => setData(r.data)).catch(() => {});
+    async function fetchAnalytics() {
+      try {
+        const res =
+          await workspacesApi.analytics(
+            wsId
+          );
+
+        setData(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAnalytics();
   }, [wsId]);
 
-  if (!data) return <div className="p-8 text-gray-400">Loading analytics…</div>;
+  // ==============================
+  // Loading State
+  // ==============================
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[70vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div
+            className="
+              w-14 h-14
+              rounded-full
+              border-4
+              border-cyan-500
+              border-t-transparent
+              animate-spin
+            "
+          />
+
+          <p className="text-slate-500 text-sm">
+            Loading analytics...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="p-8 text-red-500">
+        Failed to load analytics
+      </div>
+    );
+  }
+
+  // ==============================
+  // Summary Cards
+  // ==============================
+
+  const summaryCards = [
+    {
+      label: "Total Tasks",
+      value: data.total_tasks,
+      icon: Layers3,
+      color:
+        "from-slate-500 to-slate-700",
+    },
+    {
+      label: "Completed",
+      value:
+        data.by_status.find(
+          (s) => s.status === "done"
+        )?.count ?? 0,
+      icon: CheckCircle2,
+      color:
+        "from-emerald-500 to-green-600",
+    },
+    {
+      label: "In Progress",
+      value:
+        data.by_status.find(
+          (s) =>
+            s.status === "in_progress"
+        )?.count ?? 0,
+      icon: Clock3,
+      color:
+        "from-amber-500 to-orange-600",
+    },
+    {
+      label: "Overdue",
+      value: data.overdue_count,
+      icon: AlertTriangle,
+      color:
+        "from-red-500 to-rose-600",
+      danger: true,
+    },
+  ];
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-8">
-      <h1 className="text-xl font-semibold">Analytics</h1>
+    <div className="max-w-7xl mx-auto space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1
+            className="
+              text-3xl
+              font-bold
+              text-slate-800
+            "
+          >
+            Workspace Analytics
+          </h1>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: "Total tasks",  value: data.total_tasks },
-          { label: "Done",         value: data.by_status.find(s => s.status === "done")?.count ?? 0 },
-          { label: "In progress",  value: data.by_status.find(s => s.status === "in_progress")?.count ?? 0 },
-          { label: "Overdue",      value: data.overdue_count, danger: true },
-        ].map(card => (
-          <div key={card.label} className={`card ${card.danger && card.value > 0 ? "border-red-200" : ""}`}>
-            <p className="text-xs text-gray-500 mb-1">{card.label}</p>
-            <p className={`text-2xl font-semibold ${card.danger && card.value > 0 ? "text-red-500" : ""}`}>
-              {card.value}
-            </p>
-          </div>
-        ))}
-      </div>
+          <p className="text-slate-500 mt-1">
+            Team productivity and task
+            insights
+          </p>
+        </div>
 
-      {/* Tasks by status bar chart */}
-      <div className="card">
-        <h2 className="text-sm font-medium mb-4">Tasks by status</h2>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={data.by_status} barSize={32}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-            <XAxis dataKey="status" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-            <Tooltip />
-            <Bar dataKey="count"
-              fill="#534AB7"
-              radius={[4, 4, 0, 0]}
-              label={{ position: "top", fontSize: 11 }} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+        <div
+          className="
+            hidden md:flex
+            items-center gap-2
+            rounded-2xl
+            border border-slate-200
+            bg-white
+            px-4 py-3
+            shadow-sm
+          "
+        >
+          <TrendingUp
+            size={18}
+            className="text-cyan-500"
+          />
 
-      {/* 30-day activity line chart */}
-      <div className="card">
-        <h2 className="text-sm font-medium mb-4">Activity — last 30 days</h2>
-        <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={data.activity_last_30_days}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-            <XAxis dataKey="date"
-              tick={{ fontSize: 10 }}
-              tickFormatter={d => d.slice(5)}   /* show MM-DD only */
-              interval={4} />
-            <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-            <Tooltip />
-            <Line type="monotone" dataKey="created"   stroke="#60a5fa" dot={false} strokeWidth={2} />
-            <Line type="monotone" dataKey="completed" stroke="#34d399" dot={false} strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-        <div className="flex gap-4 mt-2 text-xs text-gray-500">
-          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-400 inline-block"/>Created</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-green-400 inline-block"/>Completed</span>
+          <span className="text-sm font-medium text-slate-700">
+            Performance Overview
+          </span>
         </div>
       </div>
 
-      {/* Member stats table */}
-      <div className="card">
-        <h2 className="text-sm font-medium mb-4">Team productivity</h2>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-xs text-gray-500 border-b">
-              <th className="pb-2 font-medium">Member</th>
-              <th className="pb-2 font-medium text-right">Assigned</th>
-              <th className="pb-2 font-medium text-right">Done</th>
-              <th className="pb-2 font-medium text-right">Rate</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.member_stats.map(m => (
-              <tr key={m.user_id} className="border-b last:border-0">
-                <td className="py-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-brand-100 text-brand-600
-                                    text-xs flex items-center justify-center font-medium">
-                      {m.username[0].toUpperCase()}
-                    </div>
-                    <span>{m.full_name}</span>
-                  </div>
-                </td>
-                <td className="py-2 text-right">{m.assigned_count}</td>
-                <td className="py-2 text-right">{m.completed_count}</td>
-                <td className="py-2 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-green-400 rounded-full"
-                        style={{ width: `${Math.round(m.completion_rate * 100)}%` }} />
-                    </div>
-                    <span className="text-xs text-gray-500">
-                      {Math.round(m.completion_rate * 100)}%
-                    </span>
-                  </div>
-                </td>
+      {/* Summary */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        {summaryCards.map((card) => {
+          const Icon = card.icon;
+
+          return (
+            <div
+              key={card.label}
+              className="
+                relative overflow-hidden
+                rounded-3xl
+                bg-white
+                border border-slate-200
+                p-5
+                shadow-sm
+                hover:shadow-lg
+                transition
+              "
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">
+                    {card.label}
+                  </p>
+
+                  <h2
+                    className={`
+                      mt-2
+                      text-3xl
+                      font-bold
+
+                      ${
+                        card.danger &&
+                        card.value > 0
+                          ? "text-red-500"
+                          : "text-slate-800"
+                      }
+                    `}
+                  >
+                    {card.value}
+                  </h2>
+                </div>
+
+                <div
+                  className={`
+                    flex h-14 w-14
+                    items-center justify-center
+                    rounded-2xl
+                    bg-gradient-to-br
+                    ${card.color}
+                    text-white
+                    shadow-lg
+                  `}
+                >
+                  <Icon size={24} />
+                </div>
+              </div>
+
+              <div
+                className="
+                  absolute -right-6 -bottom-6
+                  w-24 h-24
+                  rounded-full
+                  bg-slate-100
+                  opacity-50
+                "
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Charts */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Status Chart */}
+        <div
+          className="
+            rounded-3xl
+            border border-slate-200
+            bg-white
+            p-6
+            shadow-sm
+          "
+        >
+          <h2
+            className="
+              text-lg font-semibold
+              text-slate-800
+              mb-6
+            "
+          >
+            Tasks by Status
+          </h2>
+
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
+            <BarChart
+              data={data.by_status}
+              barSize={42}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#e5e7eb"
+              />
+
+              <XAxis
+                dataKey="status"
+                tick={{ fontSize: 12 }}
+              />
+
+              <YAxis
+                allowDecimals={false}
+                tick={{ fontSize: 12 }}
+              />
+
+              <Tooltip />
+
+              <Bar
+                dataKey="count"
+                radius={[10, 10, 0, 0]}
+                fill="#06b6d4"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Activity Chart */}
+        <div
+          className="
+            rounded-3xl
+            border border-slate-200
+            bg-white
+            p-6
+            shadow-sm
+          "
+        >
+          <h2
+            className="
+              text-lg font-semibold
+              text-slate-800
+              mb-6
+            "
+          >
+            30-Day Activity
+          </h2>
+
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
+            <AreaChart
+              data={
+                data.activity_last_30_days
+              }
+            >
+              <defs>
+                <linearGradient
+                  id="created"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="#60a5fa"
+                    stopOpacity={0.4}
+                  />
+
+                  <stop
+                    offset="95%"
+                    stopColor="#60a5fa"
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+
+                <linearGradient
+                  id="completed"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor="#34d399"
+                    stopOpacity={0.4}
+                  />
+
+                  <stop
+                    offset="95%"
+                    stopColor="#34d399"
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#e5e7eb"
+              />
+
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: 10 }}
+                tickFormatter={(d) =>
+                  d.slice(5)
+                }
+                interval={4}
+              />
+
+              <YAxis
+                allowDecimals={false}
+                tick={{ fontSize: 11 }}
+              />
+
+              <Tooltip />
+
+              <Area
+                type="monotone"
+                dataKey="created"
+                stroke="#60a5fa"
+                fill="url(#created)"
+                strokeWidth={3}
+              />
+
+              <Area
+                type="monotone"
+                dataKey="completed"
+                stroke="#34d399"
+                fill="url(#completed)"
+                strokeWidth={3}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Team Productivity */}
+      <div
+        className="
+          rounded-3xl
+          border border-slate-200
+          bg-white
+          p-6
+          shadow-sm
+        "
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div
+            className="
+              flex h-12 w-12
+              items-center justify-center
+              rounded-2xl
+              bg-cyan-100
+              text-cyan-600
+            "
+          >
+            <Users size={22} />
+          </div>
+
+          <div>
+            <h2
+              className="
+                text-xl
+                font-semibold
+                text-slate-800
+              "
+            >
+              Team Productivity
+            </h2>
+
+            <p className="text-sm text-slate-500">
+              Individual contribution and
+              completion rates
+            </p>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr
+                className="
+                  border-b border-slate-200
+                  text-left
+                "
+              >
+                <th className="pb-4 text-xs uppercase text-slate-400">
+                  Member
+                </th>
+
+                <th className="pb-4 text-xs uppercase text-slate-400 text-right">
+                  Assigned
+                </th>
+
+                <th className="pb-4 text-xs uppercase text-slate-400 text-right">
+                  Completed
+                </th>
+
+                <th className="pb-4 text-xs uppercase text-slate-400 text-right">
+                  Completion Rate
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {data.member_stats.map(
+                (member) => (
+                  <tr
+                    key={member.user_id}
+                    className="
+                      border-b border-slate-100
+                      hover:bg-slate-50
+                      transition
+                    "
+                  >
+                    {/* Member */}
+                    <td className="py-5">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="
+                            flex h-11 w-11
+                            items-center justify-center
+                            rounded-2xl
+                            bg-gradient-to-br
+                            from-cyan-500
+                            to-blue-600
+                            text-sm font-bold
+                            text-white
+                            shadow-sm
+                          "
+                        >
+                          {member.username?.[0]?.toUpperCase()}
+                        </div>
+
+                        <div>
+                          <p
+                            className="
+                              text-sm font-semibold
+                              text-slate-800
+                            "
+                          >
+                            {member.full_name}
+                          </p>
+
+                          <p className="text-xs text-slate-400">
+                            @
+                            {
+                              member.username
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Assigned */}
+                    <td
+                      className="
+                        py-5
+                        text-right
+                        text-sm font-medium
+                        text-slate-700
+                      "
+                    >
+                      {
+                        member.assigned_count
+                      }
+                    </td>
+
+                    {/* Completed */}
+                    <td
+                      className="
+                        py-5
+                        text-right
+                        text-sm font-medium
+                        text-emerald-600
+                      "
+                    >
+                      {
+                        member.completed_count
+                      }
+                    </td>
+
+                    {/* Rate */}
+                    <td className="py-5">
+                      <div className="flex items-center justify-end gap-3">
+                        <div
+                          className="
+                            w-28 h-2.5
+                            rounded-full
+                            bg-slate-100
+                            overflow-hidden
+                          "
+                        >
+                          <div
+                            className="
+                              h-full
+                              rounded-full
+                              bg-gradient-to-r
+                              from-emerald-400
+                              to-green-500
+                            "
+                            style={{
+                              width: `${Math.round(
+                                member.completion_rate *
+                                  100
+                              )}%`,
+                            }}
+                          />
+                        </div>
+
+                        <span
+                          className="
+                            text-xs font-semibold
+                            text-slate-600
+                            min-w-[40px]
+                          "
+                        >
+                          {Math.round(
+                            member.completion_rate *
+                              100
+                          )}
+                          %
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
