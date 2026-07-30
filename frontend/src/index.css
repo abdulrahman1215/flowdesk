@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 body {
-  background: #0f172a;
-  color: white;
+  background: #f9fafb;
+  color: #111827;
   font-family: Inter, sans-serif;
 }
 
@@ -32,7 +32,25 @@ body {
   .input {
     @apply w-full px-3 py-2 border rounded-lg text-sm focus:outline-none
            focus:ring-2 focus:ring-brand-500 focus:border-transparent
-           bg-white placeholder-gray-400;
+           bg-white text-gray-900 caret-brand-500 placeholder:text-gray-300
+           selection:bg-brand-100 selection:text-gray-900;
+    -webkit-text-fill-color: #111827;
+  }
+  .auth-input {
+    @apply h-14 w-full min-w-0 rounded-2xl border border-slate-200
+           bg-white px-4 pl-12 text-base text-slate-900 caret-cyan-600
+           outline-none transition placeholder:text-slate-300
+           selection:bg-cyan-100 selection:text-slate-900
+           focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100;
+    -webkit-text-fill-color: #0f172a;
+  }
+  .auth-input::selection {
+    background: #cffafe;
+    color: #0f172a;
+    -webkit-text-fill-color: #0f172a;
+  }
+  .auth-icon {
+    @apply pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400;
   }
   .card {
     @apply bg-white rounded-xl border shadow-sm p-4;

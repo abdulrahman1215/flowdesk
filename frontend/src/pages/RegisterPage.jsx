@@ -326,37 +326,25 @@ export default function RegisterPage() {
                   Full Name
                 </label>
 
-                <div className="relative">
+                <div className="relative min-w-0">
                   <User
                     size={18}
-                    className="
-                      absolute left-4 top-1/2
-                      -translate-y-1/2
-                      text-slate-400
-                    "
+                    className="auth-icon"
                   />
 
                   <input
                     type="text"
                     required
+                    autoComplete="name"
+                    autoCorrect="off"
+                    autoCapitalize="words"
+                    spellCheck={false}
                     value={form.full_name}
                     onChange={update(
                       "full_name"
                     )}
                     placeholder="John Doe"
-                    className="
-                      w-full
-                      rounded-2xl
-                      border border-slate-200
-                      bg-white
-                      py-4 pl-12 pr-4
-                      text-sm
-                      outline-none
-                      transition
-                      focus:border-cyan-400
-                      focus:ring-4
-                      focus:ring-cyan-100
-                    "
+                    className="auth-input"
                   />
                 </div>
               </div>
@@ -373,37 +361,25 @@ export default function RegisterPage() {
                   Username
                 </label>
 
-                <div className="relative">
+                <div className="relative min-w-0">
                   <AtSign
                     size={18}
-                    className="
-                      absolute left-4 top-1/2
-                      -translate-y-1/2
-                      text-slate-400
-                    "
+                    className="auth-icon"
                   />
 
                   <input
                     type="text"
                     required
+                    autoComplete="username"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     value={form.username}
                     onChange={update(
                       "username"
                     )}
                     placeholder="abdulrahman"
-                    className="
-                      w-full
-                      rounded-2xl
-                      border border-slate-200
-                      bg-white
-                      py-4 pl-12 pr-4
-                      text-sm
-                      outline-none
-                      transition
-                      focus:border-cyan-400
-                      focus:ring-4
-                      focus:ring-cyan-100
-                    "
+                    className="auth-input"
                   />
                 </div>
               </div>
@@ -420,37 +396,26 @@ export default function RegisterPage() {
                   Email Address
                 </label>
 
-                <div className="relative">
+                <div className="relative min-w-0">
                   <Mail
                     size={18}
-                    className="
-                      absolute left-4 top-1/2
-                      -translate-y-1/2
-                      text-slate-400
-                    "
+                    className="auth-icon"
                   />
 
                   <input
                     type="email"
                     required
+                    autoComplete="email"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    inputMode="email"
+                    spellCheck={false}
                     value={form.email}
                     onChange={update(
                       "email"
                     )}
                     placeholder="you@example.com"
-                    className="
-                      w-full
-                      rounded-2xl
-                      border border-slate-200
-                      bg-white
-                      py-4 pl-12 pr-4
-                      text-sm
-                      outline-none
-                      transition
-                      focus:border-cyan-400
-                      focus:ring-4
-                      focus:ring-cyan-100
-                    "
+                    className="auth-input"
                   />
                 </div>
               </div>
@@ -467,38 +432,26 @@ export default function RegisterPage() {
                   Password
                 </label>
 
-                <div className="relative">
+                <div className="relative min-w-0">
                   <Lock
                     size={18}
-                    className="
-                      absolute left-4 top-1/2
-                      -translate-y-1/2
-                      text-slate-400
-                    "
+                    className="auth-icon"
                   />
 
                   <input
                     type="password"
                     required
                     minLength={8}
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     value={form.password}
                     onChange={update(
                       "password"
                     )}
                     placeholder="Minimum 8 characters"
-                    className="
-                      w-full
-                      rounded-2xl
-                      border border-slate-200
-                      bg-white
-                      py-4 pl-12 pr-4
-                      text-sm
-                      outline-none
-                      transition
-                      focus:border-cyan-400
-                      focus:ring-4
-                      focus:ring-cyan-100
-                    "
+                    className="auth-input"
                   />
                 </div>
               </div>

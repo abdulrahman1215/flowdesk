@@ -12,6 +12,7 @@ psycopg2-binary==2.9.9   # sync driver (for Alembic migrations)
 # Auth & Security
 python-jose[cryptography]==3.3.0   # JWT tokens
 passlib[bcrypt]==1.7.4              # password hashing
+bcrypt==4.0.1                       # compatible with passlib 1.7.4
 python-multipart==0.0.9             # form data support
 
 # Validation

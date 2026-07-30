@@ -48,6 +48,11 @@ export default function AppLayout() {
                 bg-slate-50
                 py-3 pl-11 pr-16
                 text-sm
+                text-slate-900
+                caret-cyan-600
+                placeholder:text-slate-300
+                selection:bg-cyan-100
+                selection:text-slate-900
                 outline-none
                 transition
                 focus:border-cyan-400

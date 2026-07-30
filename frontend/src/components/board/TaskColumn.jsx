@@ -154,6 +154,11 @@ export default function TaskColumn({
               bg-slate-50
               px-4 py-3
               text-sm
+              text-slate-900
+              caret-cyan-600
+              placeholder:text-slate-300
+              selection:bg-cyan-100
+              selection:text-slate-900
               outline-none
               focus:ring-2
               focus:ring-cyan-500

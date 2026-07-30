@@ -248,6 +248,11 @@ export default function DashboardPage() {
                 bg-slate-50
                 px-5 py-4
                 text-sm
+                text-slate-900
+                caret-cyan-600
+                placeholder:text-slate-300
+                selection:bg-cyan-100
+                selection:text-slate-900
                 outline-none
                 transition
                 focus:border-cyan-400

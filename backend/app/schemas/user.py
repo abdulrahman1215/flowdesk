@@ -4,6 +4,14 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator
 import re
 
+MAX_BCRYPT_PASSWORD_BYTES = 72
+
+
+def validate_bcrypt_password(value: str) -> str:
+    if len(value.encode("utf-8")) > MAX_BCRYPT_PASSWORD_BYTES:
+        raise ValueError("Password must be 72 bytes or fewer")
+    return value
+
 
 # ── Request schemas (what the client sends) ──────────────────────────────────
 
@@ -28,7 +36,7 @@ class UserRegisterRequest(BaseModel):
     def password_strong(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
-        return v
+        return validate_bcrypt_password(v)
 
     @field_validator("full_name")
     @classmethod
@@ -42,6 +50,11 @@ class UserRegisterRequest(BaseModel):
 class UserLoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+    @field_validator("password")
+    @classmethod
+    def password_valid(cls, v: str) -> str:
+        return validate_bcrypt_password(v)
 
 
 # ── Response schemas (what we send back) ────────────────────────────────────

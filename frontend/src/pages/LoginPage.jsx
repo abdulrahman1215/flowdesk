@@ -291,19 +291,20 @@ export default function LoginPage() {
                   Email Address
                 </label>
 
-                <div className="relative">
+                <div className="relative min-w-0">
                   <Mail
                     size={18}
-                    className="
-                      absolute left-4 top-1/2
-                      -translate-y-1/2
-                      text-slate-400
-                    "
+                    className="auth-icon"
                   />
 
                   <input
                     type="email"
                     required
+                    autoComplete="email"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    inputMode="email"
+                    spellCheck={false}
                     value={form.email}
                     onChange={(e) =>
                       setForm((f) => ({
@@ -313,19 +314,7 @@ export default function LoginPage() {
                       }))
                     }
                     placeholder="Enter your email"
-                    className="
-                      w-full
-                      rounded-2xl
-                      border border-slate-200
-                      bg-white
-                      py-4 pl-12 pr-4
-                      text-sm
-                      outline-none
-                      transition
-                      focus:border-cyan-400
-                      focus:ring-4
-                      focus:ring-cyan-100
-                    "
+                    className="auth-input"
                   />
                 </div>
               </div>
@@ -342,19 +331,19 @@ export default function LoginPage() {
                   Password
                 </label>
 
-                <div className="relative">
+                <div className="relative min-w-0">
                   <Lock
                     size={18}
-                    className="
-                      absolute left-4 top-1/2
-                      -translate-y-1/2
-                      text-slate-400
-                    "
+                    className="auth-icon"
                   />
 
                   <input
                     type="password"
                     required
+                    autoComplete="current-password"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     value={form.password}
                     onChange={(e) =>
                       setForm((f) => ({
@@ -364,19 +353,7 @@ export default function LoginPage() {
                       }))
                     }
                     placeholder="Enter password"
-                    className="
-                      w-full
-                      rounded-2xl
-                      border border-slate-200
-                      bg-white
-                      py-4 pl-12 pr-4
-                      text-sm
-                      outline-none
-                      transition
-                      focus:border-cyan-400
-                      focus:ring-4
-                      focus:ring-cyan-100
-                    "
+                    className="auth-input"
                   />
                 </div>
               </div>
