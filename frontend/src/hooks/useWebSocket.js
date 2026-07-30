@@ -15,9 +15,15 @@ import { useTaskStore } from "../store/taskStore";
 
 import toast from "react-hot-toast";
 
+const ENV_WS_URL =
+  import.meta.env.VITE_WS_URL;
+
 const BASE_WS =
-  import.meta.env.VITE_WS_URL ||
-  "ws://localhost:8000";
+  ENV_WS_URL !== undefined
+    ? ENV_WS_URL.replace(/\/$/, "")
+    : import.meta.env.PROD
+      ? "wss://flowdesk-api-qmtl.onrender.com"
+      : "ws://localhost:8000";
 
 export function useWebSocket(workspaceId) {
   const wsRef = useRef(null);

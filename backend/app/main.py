@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.core.database import engine, Base
+from app.core.database import engine, init_database
 from app.core.redis import get_redis, close_redis
 # Register all models
 from app.models import ( user, workspace, task,  notification,)  # noqa: F401
@@ -19,8 +19,7 @@ async def lifespan(app: FastAPI):
     # Startup
     print(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     # Create database tables
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    await init_database()
     # Warm Redis connection pool
     await get_redis()
     print("All systems ready ✓")

@@ -1,9 +1,32 @@
 # app/core/config.py
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 from typing import List
 
 
+def normalize_database_url(value: str) -> str:
+    """Return an async SQLAlchemy Postgres URL for the FastAPI app."""
+    value = value.strip()
+
+    postgres_prefixes = (
+        "postgres://",
+        "postgresql://",
+        "postgresql+psycopg2://",
+    )
+
+    if value.startswith("postgresql+asyncpg://"):
+        return value
+
+    for prefix in postgres_prefixes:
+        if value.startswith(prefix):
+            return value.replace(prefix, "postgresql+asyncpg://", 1)
+
+    return value
+
+
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+
     # App
     APP_NAME: str = "FlowDesk"
     APP_VERSION: str = "1.0.0"
@@ -25,9 +48,10 @@ class Settings(BaseSettings):
     # CORS
     ALLOWED_ORIGINS: List[str] = ["http://localhost:5173"]
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def use_async_database_driver(cls, value: str) -> str:
+        return normalize_database_url(str(value))
 
 
 # Single instance used everywhere — import this, not Settings()

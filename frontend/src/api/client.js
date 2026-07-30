@@ -8,9 +8,15 @@ import toast from "react-hot-toast";
 // Environment
 // ==========================================
 
+const ENV_API_URL =
+  import.meta.env.VITE_API_URL;
+
 const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:8000";
+  ENV_API_URL !== undefined
+    ? ENV_API_URL.replace(/\/$/, "")
+    : import.meta.env.PROD
+      ? ""
+      : "http://localhost:8000";
 
 // ==========================================
 // Axios Instance
