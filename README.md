@@ -83,6 +83,48 @@ http://localhost:8000/docs
 
 for interactive API documentation.
 
+### Demo Role Users
+
+Create one login for each workspace role manually:
+
+```bash
+cd backend
+DATABASE_URL="postgresql+asyncpg://flowdesk_user:flowdesk_pass@localhost:5432/flowdesk_db" \
+SECRET_KEY="local-dev-secret" \
+DEBUG=False \
+python -m scripts.seed_demo_users
+```
+
+To seed automatically after a deploy, set this environment variable on the
+backend service:
+
+```text
+SEED_DEMO_USERS=true
+```
+
+Optional environment overrides:
+
+```text
+DEMO_PASSWORD=DemoPass123!
+DEMO_WORKSPACE_NAME=FlowDesk Demo Workspace
+DEMO_WORKSPACE_SLUG=flowdesk-demo-workspace
+```
+
+Default password for all demo users:
+
+```text
+DemoPass123!
+```
+
+Demo accounts:
+
+```text
+owner:  flowdesk.owner@example.com
+admin:  flowdesk.admin@example.com
+member: flowdesk.member@example.com
+viewer: flowdesk.viewer@example.com
+```
+
 ---
 
 ## API Overview

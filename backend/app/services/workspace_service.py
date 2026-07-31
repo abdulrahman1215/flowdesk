@@ -60,9 +60,13 @@ class WorkspaceService:
         rows = await self.repo.get_user_workspaces(current_user.id)
         result = []
         for workspace, role in rows:
-            data = WorkspaceWithRoleResponse.model_validate(workspace)
-            data.my_role = role
-            result.append(data)
+            workspace_data = WorkspaceResponse.model_validate(workspace).model_dump()
+            result.append(
+                WorkspaceWithRoleResponse(
+                    **workspace_data,
+                    my_role=role,
+                )
+            )
         return result
 
     async def _get_workspace_or_404(self, workspace_id: uuid.UUID) -> object:

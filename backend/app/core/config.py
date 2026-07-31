@@ -45,8 +45,17 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379"
 
+    # Demo seed data
+    SEED_DEMO_USERS: bool = False
+    DEMO_PASSWORD: str = "DemoPass123!"
+    DEMO_WORKSPACE_NAME: str = "FlowDesk Demo Workspace"
+    DEMO_WORKSPACE_SLUG: str = "flowdesk-demo-workspace"
+
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:5173"]
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
 
     @field_validator("DATABASE_URL", mode="before")
     @classmethod

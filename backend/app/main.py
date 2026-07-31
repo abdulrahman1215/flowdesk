@@ -20,6 +20,15 @@ async def lifespan(app: FastAPI):
     print(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     # Create database tables
     await init_database()
+    if settings.SEED_DEMO_USERS:
+        from app.core.demo_seed import seed_demo_users
+
+        result = await seed_demo_users()
+        print(
+            "Demo users seeded "
+            f"for workspace '{result.workspace_slug}' "
+            f"({len(result.accounts)} accounts)"
+        )
     # Warm Redis connection pool
     await get_redis()
     print("All systems ready ✓")
