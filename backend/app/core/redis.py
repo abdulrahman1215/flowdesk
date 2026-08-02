@@ -15,6 +15,7 @@ async def get_redis() -> aioredis.Redis:
             encoding="utf-8",
             decode_responses=True,   # always return str, not bytes
             max_connections=20,
+            ssl_cert_reqs=None,
         )
     return _redis_pool
 
